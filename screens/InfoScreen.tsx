@@ -1,20 +1,17 @@
 import React from 'react';
 import { StyleSheet, Dimensions, Button } from 'react-native';
-import { Text, Pressable, View, ScrollView} from 'react-native';
+import { Text, Pressable, View, ScrollView, FlatList} from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import Post from '../components/Post/index';
 import { useState } from 'react';
-import feed from '../assets/data/feed'  ;
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import feed from '../assets/data/feed'  ; 
 import Navigation from '../navigation';
 import { SafeAreaView} from 'react-native-safe-area-context';
-// import ArticleScreen from 'ArticleScreen';
-// import StickyHeader from 'react-native-stickyheader';
+import { useNavigation } from '@react-navigation/native';
+
 const InfoScreen = () => {
 
-    const [name, setName] = useState('chloé') ;
-    const[person, setPerson] =useState ({name:'mario', age:40})  ;
+    const navigation = useNavigation(); 
 
     /*const ClickHandler = () => {
         setName ('coco') ;
@@ -25,68 +22,69 @@ const InfoScreen = () => {
     }
 
     // les constantes contenant les infos des articles
-    const post1 = feed[0];
+    /*const post1 = feed[0];
     const post2 = feed[1];
-    const post3 = feed[2];
+    const post3 = feed[2];*/
 
-    // const Stack = createNativeStackNavigator() ;
 
     return (
 
+        
         <SafeAreaView style={styles.container}>
-
-            <Pressable
+           
+            {/**<Pressable
                     style={styles.searchButton}
-                    onPress={datalog} // log pour appli
+                    onPress={datalog} // log pour appli 
                 >
-                    <Fontisto name="search" size={25} color={"pink"} />
+                    <Fontisto name="search" size={25} color={"pink"} /> 
 
                     <Text style={styles.searchButtonText}>Informations_choisis</Text>
 
-            </Pressable>
+            </Pressable>*/ }
 
-            <ScrollView style = {styles.scrollView}>
+            
+
+           {/*<ScrollView style = {styles.scrollView}> 
                 <Text>
-
+                                    
                 </Text>
-
-                <Pressable
-                    style={styles.post}
-                    onPress={datalog} // log pour appli
-                >
+                <Text>
                     <Post post = {post1}/>
-                </Pressable>
-
-                <Pressable
-                    style={styles.post}
-                    onPress={datalog} // log pour appli
-                >
                     <Post post = {post2}/>
+                    <Post post = {post3}/>
+                </Text>
+                
+                
+                {<Pressable
+                    style={styles.post}
+                    onPress = {()=> navigation.navigate('Article')}
+                >
+                    <Post post = {post2}/> 
                 </Pressable>
 
                 <Pressable
                     style={styles.post}
-                    onPress={datalog} // log pour appli
+                    onPress = {()=> navigation.navigate('Article') } 
                 >
-                    <Post post = {post3}/>
-                </Pressable>
-            </ScrollView>
+                    <Post post = {post3}/> 
+                </Pressable> }
+            </ScrollView>*/} 
+
+           { <FlatList
+                style={styles.flatlist}
+                data = {feed}
+                renderItem = {({item})=> <Post post = {item} />}
+            />}
+
         </SafeAreaView>
+      
     )
 }
 
 // <Button style={styles.btn} title='example' onPress={ClickHandler} /> qui était à la place de test
 export default InfoScreen;
 
-/*
-  <NavigationContainer>
-            <Stack.Navigator>
-                   <Stack.Screen name="article" component={ArticleScreen} />
-                </Stack.Navigator>
-    </NavigationContainer>
 
-dans OnPress : ()=> navigation.navigate("article")
-*/
 
 const styles = StyleSheet.create({
     container: {
@@ -96,7 +94,7 @@ const styles = StyleSheet.create({
     },
 
 
-    scrollView: {
+    FlatList: {
         margin : 5,
       },
 

@@ -33,6 +33,8 @@ import InfoScreen from '../screens/InfoScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ChatRoomScreen from '../screens/ChatRoomScreen';
 import ContactsScreen from '../screens/ContactsScreen';
+import ArticleScreen from '../screens/ArticleScreen';
+
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -76,6 +78,7 @@ function RootNavigator() {
       <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
       <Stack.Screen name="ModifyEmail" component={ModifyEmail} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator}/>
+      <Stack.Screen name="Article" component={ArticleScreen} />
 
       <Stack.Screen
         name="ChatRoom"
