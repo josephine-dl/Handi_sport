@@ -1,6 +1,6 @@
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import * as React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Text, View } from '../components/Themed';
 import { RootStackScreenProps } from '../types';
 
 export default function NotFoundScreen({ navigation }: RootStackScreenProps<'NotFound'>) {
@@ -17,6 +17,7 @@ export default function NotFoundScreen({ navigation }: RootStackScreenProps<'Not
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
