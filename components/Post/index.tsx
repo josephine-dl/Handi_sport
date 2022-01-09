@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
       fontSize: 20,
       textAlign : 'center',
       fontWeight: 'bold',
-      margin : 1,
+      margin : 2,
     },
 
     resume: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
       fontSize: 14,
       color : '#5b5b5b' ,
       textAlign : 'left',
-      margin : 1,
+      margin : 3,
     },
 
     image: {
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
       // on ne veut pas une hauteur fixe mais une huateur qui dépend de la largeur
       aspectRatio: 3/2, // ratio par rapport à la largueur
       resizeMode:'cover', // cover the whole aera
-      margin : 1,
+      borderRadius: 30,
     }
     
   });

@@ -6,6 +6,7 @@ import Post from '../components/Post';
 import feed from '../assets/data/feed';
 import PostDetailed from '../components/Post/postDetailedIndex';
 import { useRoute } from '@react-navigation/native';
+import { withTheme } from 'react-native-elements';
 
 const ArticleScreen = () => {
 
@@ -15,9 +16,9 @@ const ArticleScreen = () => {
     return (
         <View style={styles.container}>
             <Text>
-                Bienvenue dans sur l'article sélectionné :
+                Bienvenue sur l'article sélectionné : 
             </Text>
-            <PostDetailed post = {post} />
+            <PostDetailed post = {post} /> 
         </View>
     )
 }
@@ -29,12 +30,14 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
+      backgroundColor : 'white', 
+      paddingTop : 10, 
     },
     
     titre: {
         fontSize: 20,
         textAlign : 'center', 
         fontWeight: 'bold',
-        margin : 1,
+        margin : 3,
     }, 
   });

@@ -93,8 +93,10 @@ const styles = StyleSheet.create({
       // on ne veut pas une hauteur fixe mais une huateur qui dépend de la largeur 
       aspectRatio: 3/2, // ratio par rapport à la largueur 
       resizeMode:'cover', // cover the whole aera 
-      margin : 1,
-    }, 
+      marginTop: 10,
+      marginBottom : 10,
+      borderRadius: 30, 
+      }, 
 
     contenu_article: {
       fontSize: 18,

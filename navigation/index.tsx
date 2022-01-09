@@ -16,6 +16,7 @@ import { ColorSchemeName, Pressable, View, Image, Text, TouchableOpacity, TextIn
 import { auth, firebase} from '../Setup';
 import {SignUpUser, SendEmailUser, ForgotPassword, SignInUser, SignOutUser, DeleteUser,  ModificationOfEmail, WriteUserData_Company, WriteUserData_Handicap, WriteJobOffer} from '../apiService';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import{ModalPicker} from '../components/Post/ModalPicker'
 
 var logo = require('../assets/images/logo.png');
 var loader = require('../assets/images/loading.gif');
@@ -33,8 +34,8 @@ import InfoScreen from '../screens/InfoScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ChatRoomScreen from '../screens/ChatRoomScreen';
 import ContactsScreen from '../screens/ContactsScreen';
-import ArticleScreen from '../screens/ArticleScreen';
-
+import ArticleScreen from '../screens/ArticleScreen';1
+import AjoutCulture from '../screens/AjoutCulture';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -79,6 +80,8 @@ function RootNavigator() {
       <Stack.Screen name="ModifyEmail" component={ModifyEmail} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator}/>
       <Stack.Screen name="Article" component={ArticleScreen} />
+      <Stack.Screen name="AjoutCulture" component={AjoutCulture} />
+      <Stack.Screen name="Culture" component={CultureScreen} />
 
       <Stack.Screen
         name="ChatRoom"
@@ -567,6 +570,18 @@ function ListeOffresEmploi({navigation}) {
         })
   };
 
+  const [chooseData, setchooseData] = useState('Jour entrainement : ');
+  const [isModalVisible, setModalVisible] = useState(false);
+
+  const changeModalVisibility = (bool) =>{
+    setModalVisible(bool)
+  }
+
+  const setData = (option) =>{
+    setchooseData(option)
+  }
+
+
   return(
 
     <KeyboardAwareScrollView style={{backgroundColor: '#FFF'}}>
@@ -586,6 +601,21 @@ function ListeOffresEmploi({navigation}) {
         <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Nom de la société' value={state.entreprise} onChangeText={(text) => setState({...state,entreprise:text})}/>
       </View>
+
+      <View>
+          <MaterialIcons name={'person-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>  
+          <SafeAreaView style={styles.container}>
+            <TouchableOpacity onPress={( )=> changeModalVisibility(true)}>
+              <Text>{chooseData}</Text>
+            </TouchableOpacity>
+            <Modal transparent={true} animationType='fade' visible={isModalVisible} nRequestClose={()=>changeModalVisibility(false)}>
+              <ModalPicker changeModalVisibility={changeModalVisibility} setDate={setData}>
+                
+              </ModalPicker>
+            </Modal>
+
+          </SafeAreaView>
+        </View>
 
       <View>
         <MaterialIcons name={'image'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
