@@ -17,6 +17,21 @@ export const SignUpUser = (email, password) => {
   });
 };
 
+export const SignUpUser_Handicap = (email, password) => {
+
+  return new Promise(function(resolve, reject){
+    auth
+      .createUserWithEmailAndPassword(email, password)
+      .then(() =>{
+        resolve('Inscription réussie');
+      })
+      .catch(error => {
+        reject(error)
+      });
+
+  });
+};
+
 export const SendEmailUser = () => {
 
   return new Promise(function(resolve, reject){
@@ -105,8 +120,23 @@ export const ModificationOfEmail = (email) => {
   });
 };
 
+export const WriteUserData_Association = async (nomAssociation, mail, motDePasse, confirmationDuMotDePasse) => {
 
-export const WriteUserData = async (nom, mail, motDePasse, confirmationDuMotDePasse) => {
+    try{
+
+        return await firebase.database().ref('/Utilisateurs/Associations/' + nomAssociation).set({
+            mail : mail,
+            motDePasse: motDePasse,
+            confirmationDuMotDePasse: confirmationDuMotDePasse
+          });
+
+        }catch(error) {
+            return error;
+          }
+};
+
+
+export const WriteUserData_Company = async (nom, mail, motDePasse, confirmationDuMotDePasse) => {
 
   try{
 
@@ -120,6 +150,43 @@ export const WriteUserData = async (nom, mail, motDePasse, confirmationDuMotDePa
         return error;
       }
 };
+
+export const WriteUserData_Handicap = async (nomPrenomPseudo, mail, motDePasse, confirmationDuMotDePasse) => {
+
+  try{
+
+    return await firebase.database().ref('/Utilisateurs/Personnes en situation de handicap/' + nomPrenomPseudo).set({
+        nomPrenomPseudo: nomPrenomPseudo,
+        mail : mail,
+        motDePasse: motDePasse,
+        confirmationDuMotDePasse: confirmationDuMotDePasse
+      });
+
+    }catch(error) {
+        return error;
+      }
+};
+
+export const WriteAssociation = async (nomAssociation, activite, ville, typeHandicap, imageURL, telephone, lien) => {
+
+    try{
+
+      return await firebase.database().ref('/Utilisateurs/Associations/-- Informations --/' + nomAssociation).set({
+          nomAssociation: nomAssociation,
+          activite: activite,
+          ville: ville,
+          typeHandicap: typeHandicap,
+          imageURL: imageURL,
+          telephone: telephone,
+          lien: lien
+
+        });
+
+      }catch(error) {
+          return error;
+        }
+};
+
 
 export const WriteJobOffer = async (intitule, entreprise, localisation, niveauDeFormation, typeDeContrat, salaire, datePublication, imageURL, lien) => {
 

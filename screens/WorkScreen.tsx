@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, TextInput, FlatList, Image, Linking, ScrollView
 import {ListItem, SearchBar} from 'react-native-elements';
 import filter from "lodash.filter";
 import {Ionicons} from '@expo/vector-icons'
-import SearchComponent from '../components/SearchComponent'
 import Icon from 'react-native-vector-icons/Ionicons';
 import {auth, firebase, database} from '../Setup'
 
