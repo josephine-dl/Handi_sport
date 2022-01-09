@@ -5,15 +5,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-import SplashScreen from './screens/SplashScreen'
-import Login from './screens/Login'
-
-import WorkScreen from './WorkScreen'
-import {StyleSheet, View} from 'react-native'
+import {MaterialIcons} from '@expo/vector-icons';
+import {StyleSheet, View, TouchableOpacity} from 'react-native'
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  console.disableYellowBox = true;
 
   if (!isLoadingComplete) {
     return null;
@@ -23,6 +21,7 @@ export default function App() {
     return (
 
       <SafeAreaProvider>
+      
        <Navigation colorScheme={colorScheme} />
        <StatusBar />
 

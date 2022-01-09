@@ -3,14 +3,20 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome, MaterialIcons, Entypo } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, Entypo, Feather } from '@expo/vector-icons';
+import {MaterialCommunityIcons} from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Pressable, View, Image, Text, TouchableOpacity, TextInput, Icon} from 'react-native';
+import {useState} from 'react';
+import Icon from 'react-native-vector-icons/Ionicons'
+import Icons from 'react-native-vector-icons/FontAwesome5';
+import { ColorSchemeName, Pressable, View, Image, Text, TouchableOpacity, TextInput, Alert} from 'react-native';
 import { auth, firebase} from '../Setup';
-import {SignUpUser, SignInUser, SubmitUser, WriteUserData, WriteJobOffer} from '../apiService';
+import {SignUpUser, SendEmailUser, ForgotPassword, SignInUser, SignOutUser, DeleteUser,  ModificationOfEmail, WriteUserData_Company, WriteUserData_Handicap, WriteJobOffer} from '../apiService';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 var logo = require('../assets/images/logo.png');
 var loader = require('../assets/images/loading.gif');
 
@@ -25,6 +31,10 @@ import WorkScreen from '../screens/WorkScreen';
 import CultureScreen from '../screens/CultureScreen';
 import InfoScreen from '../screens/InfoScreen';
 import ChatScreen from '../screens/ChatScreen';
+import ChatRoomScreen from '../screens/ChatRoomScreen';
+import ContactsScreen from '../screens/ContactsScreen';
+import ArticleScreen from '../screens/ArticleScreen';1
+import AjoutCulture from '../screens/AjoutCulture';
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
@@ -61,9 +71,42 @@ function RootNavigator() {
       <Stack.Screen name=" " component={SplashScreen} />
       <Stack.Screen name="Handi +" component={HomeScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name= "ResetPassword" component={ResetPassword} />
       <Stack.Screen name="Entreprise" component={CompanyScreen} />
+      <Stack.Screen name="Handicap" component={HandicapScreen} />
       <Stack.Screen name="ListeOffresEmploi" component={ListeOffresEmploi} />
+      <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+      <Stack.Screen name="ModifyEmail" component={ModifyEmail} />
       <Stack.Screen name="BottomTabNavigator" component={BottomTabNavigator}/>
+      <Stack.Screen name="Article" component={ArticleScreen} />
+      <Stack.Screen name="AjoutCulture" component={AjoutCulture} />
+      <Stack.Screen name="Culture" component={CultureScreen} />
+
+      <Stack.Screen
+        name="ChatRoom"
+        component={ChatRoomScreen}
+        options={({ route }) => ({
+          title: route.params.name,
+          headerRight: () => (
+            <View style={{
+              flexDirection: 'row',
+              width: 100,
+              justifyContent: 'space-around',
+              marginRight: 5,
+            }}>
+              <Feather name="settings" size={24} color="black" />
+            </View>
+          )
+        })}
+      />
+      <Stack.Screen
+        name="Contacts"
+        component={ContactsScreen}
+      />
+
+      <Stack.Group screenOptions={{ presentation: 'modal' }}>
+        <Stack.Screen name="Modal" component={ModalScreen} />
+      </Stack.Group>
 
     </Stack.Navigator>
   );
@@ -75,7 +118,7 @@ function SplashScreen({navigation}){
 
     navigation.navigate('Handi +')
 
-  }, 5050);
+  }, 3000);
 
   return(
   <View
@@ -106,6 +149,7 @@ function HomeScreen({navigation}){
     SignInUser(state.emailAdress, state.password)
       .then(data => {
         alert(data);
+        navigation.navigate('BottomTabNavigator');
       })
       .catch(error => {
         alert(error);
@@ -121,26 +165,46 @@ function HomeScreen({navigation}){
     return subscriber;
   }, []);
 
+  const [show, setShow] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
+
   return(
 
+    <KeyboardAwareScrollView style={{backgroundColor: '#FFF'}}>
+
     <View style ={{flex: 1, padding: 5, alignItems: 'center', backgroundColor: '#FFF'}}>
-      <Text style={{fontSize: 28, fontWeight: 'bold', marginTop: 60, marginBottom: 40}}>Bienvenue sur Handi + !</Text>
+      <Text style={{fontSize: 28, fontWeight: 'bold', marginTop: 60, marginBottom: 70}}>Bienvenue sur Handi + !</Text>
 
       <Image source = {logo}
-        style={{height: 150, width: 240,  marginBottom: 60}}></Image>
+        style={{height: 150, width: 240,  marginBottom: 70}}></Image>
 
-      <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
-      placeholder='Mail' keyboardType='email-address' value={state.emailAdress} onChangeText={(text) => setState({...state,emailAdress:text})}/>
-    
+      <View>
+        <MaterialIcons name={'email'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+        placeholder='Mail' keyboardType='email-address' value={state.emailAdress} onChangeText={(text) => setState({...state,emailAdress:text})}/>
+      </View>
 
-      <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, marginBottom: 5}}
-      secureTextEntry={true} placeholder='Mot de passe' value={state.password} onChangeText={(text) => setState({...state,password:text})}/>
+      <View>
+        <MaterialIcons name={'lock-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45, marginBottom: 20}}
+        secureTextEntry={visible} placeholder='Mot de passe' value={state.password} onChangeText={(text) => setState({...state,password:text})}/>
 
-      <View style={{margin: 30, paddingVertical: 20}}>
+        <TouchableOpacity style={{position:'absolute', right: 25, top: 20}} onPress={
+          () => {
+            setVisible(!visible)
+            setShow(!show)
+          }
+        }>
+          <MaterialCommunityIcons
+          name= {show === false ? 'eye-outline' : 'eye-off-outline'}
+          size= {26}
+          color= {'#B22222'}/>
+        </TouchableOpacity>
+      </View>
 
-        <TouchableOpacity onPress={(signIn) => navigation.navigate('BottomTabNavigator')}
-          style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}
-        >
+      <View>
+
+        <TouchableOpacity onPress={signIn} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 40}}>
           <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Connexion</Text>
         </TouchableOpacity>
 
@@ -148,9 +212,50 @@ function HomeScreen({navigation}){
           <Text style={{textAlign: 'center', color: '#000000', fontSize: 18, fontWeight: 'bold'}}>Nouvel utilisateur ? Cliquez ici</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
+          <Text style={{textAlign: 'center', color: '#000000', fontSize: 18, fontWeight: 'bold', marginTop: 15}}>Mot de passe oublié ? Cliquez ici</Text>
+        </TouchableOpacity>
+
       </View>
 
     </View>
+
+  </KeyboardAwareScrollView>
+  );
+}
+
+function ResetPassword({navigation}){
+
+  const [state, setState]= React.useState({
+    emailAdress: '',
+  });
+
+  const newPassword = () => {
+    ForgotPassword(state.emailAdress)
+    alert('Merci de consulter votre mail')
+    navigation.navigate('Handi +');
+  };
+
+  return(
+
+    <View style={{flex: 1, padding: 5, backgroundColor: '#FFF', alignItems: 'center'}}>
+
+      <Text style={{fontSize: 24, fontWeight: 'bold', marginTop: 80}}>Réinitialisation</Text>
+
+      <Text style={{fontSize: 24, fontWeight: 'bold', marginTop: 30, marginBottom: 70}}>de votre mot de passe</Text>
+
+      <View>
+        <MaterialIcons name={'email'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+        placeholder='Mail' keyboardType='email-address' value={state.emailAdress} onChangeText={(text) => setState({...state,emailAdress:text})}/>
+      </View>
+
+      <TouchableOpacity onPress={newPassword} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginTop: 25}}>
+        <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
+      </TouchableOpacity>
+
+    </View>
+
   );
 }
 
@@ -162,7 +267,7 @@ function ProfileScreen({navigation}){
 
         <Text style={{fontSize: 28, fontWeight: 'bold', marginTop: 80, marginBottom: 70}}>Votre profil ?</Text>
 
-        <TouchableOpacity onPress={ () => navigation.navigate('BottomTabNavigator')}
+        <TouchableOpacity onPress={ () => navigation.navigate('Handicap')}
           style={{backgroundColor: '#00CCCB', padding: 10, width: 325, borderRadius: 30, marginHorizontal: 2, marginBottom: 40}}
         >
           <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Personne en situation de handicap</Text>
@@ -188,10 +293,10 @@ function ProfileScreen({navigation}){
   );
 }
 
-function CompanyScreen({navigation}){
+function HandicapScreen({navigation}){
 
   const [state, setState]= React.useState({
-    nom: '',
+    nomPrenomPseudo: '',
     mail: '',
     motDePasse: '',
     confirmationDuMotDePasse: '',
@@ -199,13 +304,15 @@ function CompanyScreen({navigation}){
   });
 
   const [user, setUser]=React.useState();
+
   const signUp = () => {
     SignUpUser(state.mail, state.motDePasse)
       .then(data => {
-        WriteUserData(state.nom, state.mail, state.motDePasse, state.confirmationDuMotDePasse).
-        then(() =>{
-          alert('Inscription réussie');
-          navigation.navigate('ListeOffresEmploi');
+        WriteUserData_Handicap(state.nomPrenomPseudo, state.mail, state.motDePasse, state.confirmationDuMotDePasse)
+          .then(() =>{
+            SendEmailUser()
+            alert('Inscription réussie ! Email envoyé !');
+            navigation.navigate('BottomTabNavigator');
        }).
         catch((error) =>{
           alert(error);
@@ -226,7 +333,13 @@ function CompanyScreen({navigation}){
     return subscriber;
   }, []);
 
+  const [show, setShow] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
+
+
   return(
+
+    <KeyboardAwareScrollView style={{backgroundColor: '#FFF'}}>
 
     <View style ={{flex: 1, padding: 5, alignItems: 'center', backgroundColor: '#FFF'}}>
 
@@ -235,26 +348,196 @@ function CompanyScreen({navigation}){
         <Image source = {logo}
           style={{height: 150, width: 240,  marginBottom: 60}}></Image>
 
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
-        placeholder='Nom de la société' value={state.nom} onChangeText={(text) => setState({...state,nom:text})}/>
+        <View>
+          <MaterialIcons name={'person-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+          placeholder='Nom Prénom ou Pseudo' value={state.nomPrenomPseudo} onChangeText={(text) => setState({...state,nomPrenomPseudo:text})}/>
+        </View>
 
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
-        placeholder='Mail' keyboardType='email-address' value={state.mail} onChangeText={(text) => setState({...state,mail:text})} />
+        <View>
+          <MaterialIcons name={'email'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+          placeholder='Mail' keyboardType='email-address' value={state.mail} onChangeText={(text) => setState({...state,mail:text})} />
+        </View>
 
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, marginBottom: 15}}
-        secureTextEntry={true} placeholder='Mot de passe' value={state.motDePasse} onChangeText={(text) => setState({...state,motDePasse:text})} />
+        <View>
+          <MaterialIcons name={'lock-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45,marginBottom: 15}}
+          secureTextEntry={visible} placeholder='Mot de passe' value={state.motDePasse} onChangeText={(text) => setState({...state,motDePasse:text})} />
 
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, marginBottom: 35}}
-        secureTextEntry={true} placeholder='Confirmation du mot de passe' value={state.confirmationDuMotDePasse} onChangeText={(text) => setState({...state,confirmationDuMotDePasse:text})}/>
+          <TouchableOpacity style={{position:'absolute', right: 25, top: 20}} onPress={
+            () => {
+              setVisible(!visible)
+              setShow(!show)
+            }
+          }>
+            <MaterialCommunityIcons
+            name= {show === false ? 'eye-outline' : 'eye-off-outline'}
+            size= {26}
+            color= {'#B22222'}/>
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity onPress = {signUp}
-          style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2}}
-        >
-          <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
+        <View>
+          <MaterialIcons name={'lock-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45, marginBottom: 35}}
+          secureTextEntry={visible} placeholder='Confirmation du mot de passe' value={state.confirmationDuMotDePasse} onChangeText={(text) => setState({...state,confirmationDuMotDePasse:text})}/>
+
+          <TouchableOpacity style={{position:'absolute', right: 25, top: 20}} onPress={
+            () => {
+              setVisible(!visible)
+              setShow(!show)
+            }
+          }>
+            <MaterialCommunityIcons
+            name= {show === false ? 'eye-outline' : 'eye-off-outline'}
+            size= {26}
+            color= {'#B22222'}/>
+          </TouchableOpacity>
+
+        </View>
+
+        {
+          state.motDePasse != state.confirmationDuMotDePasse ?
+          <Text style={{fontWeight: 'bold', marginBottom: 20}}> Attention : mots de passe différents</Text> : null
+        }
+
+
+        <TouchableOpacity onPress={signUp}
+            style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}>
+            <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
         </TouchableOpacity>
+
 
     </View>
 
+    </KeyboardAwareScrollView>
+
+  );
+
+
+
+}
+
+function CompanyScreen({navigation}){
+
+  const [state, setState]= React.useState({
+    nom: '',
+    mail: '',
+    motDePasse: '',
+    confirmationDuMotDePasse: '',
+
+  });
+
+  const [user, setUser]=React.useState();
+
+  const signUp = () => {
+    SignUpUser(state.mail, state.motDePasse)
+      .then(data => {
+        WriteUserData_Company(state.nom, state.mail, state.motDePasse, state.confirmationDuMotDePasse)
+          .then(() =>{
+            SendEmailUser()
+            alert('Inscription réussie ! Email envoyé !');
+            navigation.navigate('ListeOffresEmploi');
+       }).
+        catch((error) =>{
+          alert(error);
+        })
+
+      })
+      .catch(error => {
+        alert(error);
+      })
+  };
+
+  const onAuthStateChanged = user => {
+    setUser(user);
+  };
+
+  React.useEffect(() => {
+    const subscriber = auth.onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
+  const [show, setShow] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
+
+
+  return(
+
+    <KeyboardAwareScrollView style={{backgroundColor: '#FFF'}}>
+
+    <View style ={{flex: 1, padding: 5, alignItems: 'center', backgroundColor: '#FFF'}}>
+
+      <Text style={{fontSize: 25, fontWeight: 'bold', marginTop: 60, marginBottom: 40}}>Créer votre compte Handi + !</Text>
+
+        <Image source = {logo}
+          style={{height: 150, width: 240,  marginBottom: 60}}></Image>
+
+        <View>
+          <MaterialIcons name={'person-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+          placeholder='Nom de la société' value={state.nom} onChangeText={(text) => setState({...state,nom:text})}/>
+        </View>
+
+        <View>
+          <MaterialIcons name={'email'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+          placeholder='Mail' keyboardType='email-address' value={state.mail} onChangeText={(text) => setState({...state,mail:text})} />
+        </View>
+
+        <View>
+          <MaterialIcons name={'lock-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45,marginBottom: 15}}
+          secureTextEntry={visible} placeholder='Mot de passe' value={state.motDePasse} onChangeText={(text) => setState({...state,motDePasse:text})} />
+
+          <TouchableOpacity style={{position:'absolute', right: 25, top: 20}} onPress={
+            () => {
+              setVisible(!visible)
+              setShow(!show)
+            }
+          }>
+            <MaterialCommunityIcons
+            name= {show === false ? 'eye-outline' : 'eye-off-outline'}
+            size= {26}
+            color= {'#B22222'}/>
+          </TouchableOpacity>
+        </View>
+
+        <View>
+          <MaterialIcons name={'lock-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+          <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45, marginBottom: 35}}
+          secureTextEntry={visible} placeholder='Confirmation du mot de passe' value={state.confirmationDuMotDePasse} onChangeText={(text) => setState({...state,confirmationDuMotDePasse:text})}/>
+
+          <TouchableOpacity style={{position:'absolute', right: 25, top: 20}} onPress={
+            () => {
+              setVisible(!visible)
+              setShow(!show)
+            }
+          }>
+            <MaterialCommunityIcons
+            name= {show === false ? 'eye-outline' : 'eye-off-outline'}
+            size= {26}
+            color= {'#B22222'}/>
+          </TouchableOpacity>
+
+        </View>
+
+        {
+          state.motDePasse != state.confirmationDuMotDePasse ?
+          <Text style={{fontWeight: 'bold', marginBottom: 20}}> Attention : mots de passe différents</Text> : null
+        }
+
+
+        <TouchableOpacity onPress={signUp}
+            style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}>
+            <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
+        </TouchableOpacity>
+
+
+    </View>
+
+    </KeyboardAwareScrollView>
 
   );
 
@@ -288,41 +571,159 @@ function ListeOffresEmploi({navigation}) {
 
   return(
 
+    <KeyboardAwareScrollView style={{backgroundColor: '#FFF'}}>
+
     <View style ={{flex: 1, padding: 5, alignItems: 'center', backgroundColor: '#FFF'}}>
 
       <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 30, marginBottom: 20}}>Renseigner votre offre d'emploi</Text>
 
-
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      <View>
+        <MaterialIcons name={'work-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Intitulé du poste' value={state.intitule} onChangeText={(text) => setState({...state,intitule:text})}/>
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'person-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Nom de la société' value={state.entreprise} onChangeText={(text) => setState({...state,entreprise:text})}/>
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'image'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Logo de la société'value={state.imageURL} onChangeText={(text) => setState({...state,imageURL:text})}/>
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'school'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Formation requise' value={state.niveauDeFormation} onChangeText={(text) => setState({...state,niveauDeFormation:text})} />
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'euro'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Salaire' value={state.salaire} onChangeText={(text) => setState({...state,salaire:text})}/>
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'help-outline'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Type de contrat' value={state.typeDeContrat} onChangeText={(text) => setState({...state,typeDeContrat:text})} />
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'room'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Localisation' value={state.localisation} onChangeText={(text) => setState({...state,localisation:text})}/>
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'event'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
         placeholder='Date de publication' value={state.datePublication} onChangeText={(text) => setState({...state,datePublication:text})} />
-        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, marginBottom: 25}}
+      </View>
+
+      <View>
+        <MaterialIcons name={'link'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45, marginBottom: 25}}
         placeholder='Lien pour postuler' value={state.lien} onChangeText={(text) => setState({...state,lien:text})}/>
+      </View>
 
         <TouchableOpacity onPress= {offer}
-          style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2}}
-        >
+          style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2}}>
           <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
         </TouchableOpacity>
 
     </View>
 
+  </KeyboardAwareScrollView>
 
   );
 }
+
+function SettingsScreen({navigation}) {
+
+  const logout = () => {
+    Alert.alert(
+      "Déconnexion",
+      "Voulez-vous vraiment vous déconnecter ?",
+      [
+        {
+          text: "Annuler",
+          onPress: () => {
+            return null;
+          },
+        },
+        {
+          text: "Confirmer",
+          onPress: () => navigation.navigate('Handi +')
+
+          },
+
+      ],
+      { cancelable: false }
+    );
+  };
+
+  return(
+
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+
+        <TouchableOpacity onPress= {logout} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}>
+          <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Déconnexion</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress= {DeleteUser} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}>
+          <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Supprimer son compte</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress = {() => navigation.navigate('ModifyEmail')} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginBottom: 30}}>
+          <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Modifier son adresse mail</Text>
+        </TouchableOpacity>
+
+    </View>
+
+  );
+
+}
+
+function ModifyEmail({navigation}){
+
+  const [state, setState]= React.useState({
+    emailAdress: '',
+  });
+
+  const newEmail = () => {
+    ModificationOfEmail(state.emailAdress)
+    alert('Merci de consulter votre mail')
+    navigation.navigate('Handi +');
+  };
+
+  return(
+
+    <View style={{flex: 1, padding: 5, backgroundColor: '#FFF', alignItems: 'center'}}>
+
+      <Text style={{fontSize: 24, fontWeight: 'bold', marginTop: 80}}>Modification</Text>
+
+      <Text style={{fontSize: 24, fontWeight: 'bold', marginTop: 30, marginBottom: 70}}>de votre adresse mail</Text>
+
+      <View>
+        <MaterialIcons name={'email'} size={28} color='#00CCCB' style ={{position: 'absolute', top: 16, left: 18, color: '#B22222'}}/>
+        <TextInput style={{borderWidth: 1, borderColor: '#00CCCB', borderRadius: 10, padding: 8, margin: 10, width: 350, paddingLeft: 45}}
+        placeholder='Mail' keyboardType='email-address' value={state.emailAdress} onChangeText={(text) => setState({...state,emailAdress:text})}/>
+      </View>
+
+      <TouchableOpacity onPress={newEmail} style={{backgroundColor: '#00CCCB', padding: 10, width: 250, borderRadius: 30, marginHorizontal: 2, marginTop: 25}}>
+        <Text style={{textAlign: 'center', color: '#FFF', fontSize: 18, fontWeight: 'bold'}}>Valider</Text>
+      </TouchableOpacity>
+
+    </View>
+
+  );
+}
+
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.
@@ -334,29 +735,26 @@ function BottomTabNavigator() {
   const colorScheme = useColorScheme();
 
   return (
+
     <BottomTab.Navigator
       initialRouteName="TabOne"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: '#B22222',
+        headerStyle: {backgroundColor: '#FFF'},
       }}>
+
       <BottomTab.Screen
         name="TabOne"
         component={SportScreen}
         options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
           title: 'Sport',
-          tabBarIcon: ({ color }) => <MaterialIcons name="sports" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="sports" size={20} color={color} />,
           headerRight: () => (
             <Pressable
               onPress={() => navigation.navigate('Modal')}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
             </Pressable>
           ),
         })}
@@ -366,7 +764,7 @@ function BottomTabNavigator() {
         component={WorkScreen}
         options={{
           title: "Emploi",
-          tabBarIcon: ({ color }) => <Entypo name="briefcase" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Entypo name="briefcase" size={20} color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -374,7 +772,7 @@ function BottomTabNavigator() {
         component={CultureScreen}
         options={{
           title: 'Culture',
-          tabBarIcon: ({ color }) => <MaterialIcons name="account-balance" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <MaterialIcons name="account-balance" size={20} color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -382,7 +780,7 @@ function BottomTabNavigator() {
         component={InfoScreen}
         options={{
           title: 'HandiScoop',
-          tabBarIcon: ({ color }) => <FontAwesome name="newspaper-o" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesome name="newspaper-o" size={20} color={color} />,
         }}
       />
       <BottomTab.Screen
@@ -390,9 +788,19 @@ function BottomTabNavigator() {
         component={ChatScreen}
         options={{
           title: 'HandiChat',
-          tabBarIcon: ({ color }) => <Entypo name="chat" size={24} color={color} />,
+          tabBarIcon: ({ color }) => <Entypo name="chat" size={20} color={color} />,
         }}
       />
+
+      <BottomTab.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{
+          title: 'Paramètres',
+          tabBarIcon: ({ color }) => <Icon name="person" size={20} color={color} />,
+        }}
+      />
+
     </BottomTab.Navigator>
   );
 }

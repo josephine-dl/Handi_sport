@@ -1,34 +1,20 @@
-
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, Linking, ScrollView} from 'react-native';
 import {ListItem, SearchBar} from 'react-native-elements';
 import filter from "lodash.filter";
 import {Ionicons} from '@expo/vector-icons'
-import SearchComponent from '../components/SearchComponent'
 import Icon from 'react-native-vector-icons/Ionicons';
 import {auth, firebase, database} from '../Setup'
 
-const Item = ({localisation}) => {
-  return(
-    <View style ={styles.item}>
-      <Text>{localisation}</Text>
-    </View>
-  );
-};
-
-const RI = ({item}) => <Item localisation = {item.localisation} />;
-
 export default class WorkScreen extends React.Component{
 
-  constructor(props){
-    super(props);
+  constructor(){
+    super();
     this.state={
       list:[],
-      loading: false,
-      error: null,
-      searchedValue: "",
+      dataBackup:[],
+      query : null
     };
-    this.arrayholder = this.state.list;
   }
 
   componentDidMount(){
@@ -48,17 +34,36 @@ export default class WorkScreen extends React.Component{
           typeDeContrat: child.val().typeDeContrat
         })
       })
-      this.setState({list : li})
+      this.setState({
+        list : li,
+        dataBackup: li
+      })
     })
   }
 
-  searchFunction = (text) => {
-    const updatedData = this.arrayholder.filter((item) => {
-      const item_data = '${item.localisation.toUpperCase()})';
-      const text_data = text.toUpperCase();
-      return item_data.indexOf(text_data) > -1;
+
+  filterItem = event => {
+    var query = event.nativeEvent.text;
+    this.setState({
+      query : query,
     });
-    this.setState({data: updatedData, searchedValue: text});
+
+    if(query == ""){
+      this.setState({
+        list: this.state.dataBackup
+      })
+    }
+
+    else{
+      var data = this.state.dataBackup;
+      query = query.toLowerCase();
+      data = data.filter(l => l.intitule.toLowerCase().match(query));
+
+      this.setState({
+        list: data,
+      });
+
+    }
   };
 
   render() {
@@ -66,22 +71,16 @@ export default class WorkScreen extends React.Component{
     return (
 
         <View >
-             <ScrollView>
+            <ScrollView>
 
-              <SearchBar
-                placeholder="Search here ..."
-                lightTheme
-                round
-                value = {this.state.searchedValue}
-                onChangeText = {(text) => this.searchFunction(text)}
-                autoCorrect = {false}
-              />
+            <SearchBar placeholder="Rechercher par métier ..." lightTheme round
+            value ={this.state.query} onChange={this.filterItem.bind(this)}/>
 
             <FlatList
               data={this.state.list}
               keyExtractor = {(item) => item.key}
-              RI = {RI}
               renderItem={({item}) => {
+
                 return(
 
                   <View style={styles.main_container}>
@@ -156,6 +155,7 @@ const styles = StyleSheet.create({
         width: 131,
         height: 67,
         marginLeft: -3.5,
+        marginRight: 11,
         margin: 5,
 
       },
@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         flex: 1,
         flexWrap: 'wrap',
-        paddingRight: 5
+        paddingRight: 5,
+        marginBottom:-4
       },
       description_container: {
         flex: 3
