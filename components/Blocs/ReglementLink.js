@@ -7,13 +7,9 @@ import styles from "./styles";
 const ReglementLink = () => {
     const navigation = useNavigation();
 
-    const onPress = () => {
-        navigation.navigate('Règlement');
-    }
-
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={() => navigation.navigate('Règlement')}>
                 <View style={styles.blocSalon}>
                     <Text style={styles.titleSalon}>Règlement</Text>
                     <Text style={styles.description}>Vous trouverez dans ce salon les règles du forum.</Text>

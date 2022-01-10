@@ -5,13 +5,25 @@ import { AntDesign } from '@expo/vector-icons'
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Avatar } from "react-native-elements";
 import { GiftedChat } from "react-native-gifted-chat";
+import firebase from "firebase";
 
 const BienvenueScreen = ({navigation}) => {
 
     const [messages, setMessages] = useState([])
+    var nom = ''
+
+    const nomUser = firebase.database().ref('/Utilisateurs/Personnes en situation de handicap/').on('value', (snapshot)  => {
+        snapshot.forEach((child) =>{
+            if((child.val().mail.toLowerCase()).localeCompare(auth?.currentUser?.email.toLowerCase()) == 0){
+                nom = child.val().nomPrenomPseudo
+            }
+        })
+    })
+
 
     useLayoutEffect(() => {
         const unsubscribe = db.collection('bienvenue').orderBy('createdAt','desc').onSnapshot(snapshot=>setMessages(
+
             snapshot.docs.map(doc=>({
                 _id:doc.data()._id,
                 createdAt:doc.data().createdAt.toDate(),
@@ -38,48 +50,19 @@ const BienvenueScreen = ({navigation}) => {
         })
     }, [])
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-                headerLeft:() =>(
-                <TouchableOpacity 
-                    style={{marginRight: 30}}
-                    onPress={goBack}
-                >
-                    <AntDesign 
-                        name="logout" 
-                        size={24}
-                        color="black" 
-                    />
-                </TouchableOpacity>
-                
-            ),
-        
-        })
-    }, [])
-
-    const goBack = () => {
-        const navigation = useNavigation();
-        {
-            navigation.navigate('Bienvenue')
-        }
-    }
 
     return (
-        <View>
-       <GiftedChat
-            renderUsernameOnMessage={true}
-            showAvatarForEveryMessage={true}
-            messages={messages}
-            onSend={messages => onSend(messages)}
-            user={{
-                _id: auth?.currentUser?.email,
-                name: auth?.currentUser?.displayName,
-                avatar: auth?.currentUser?.photoURL,
-            }}
-        />
-        
-            <NewTopicBienvenueButton/>
-        </View>
+            <GiftedChat
+                    renderUsernameOnMessage={true}
+                    showAvatarForEveryMessage={true}
+                    messages={messages}
+                    onSend={messages => onSend(messages)}
+                    user={{
+                        _id: auth?.currentUser?.email,
+                        name: nom,
+                        avatar: auth?.currentUser?.photoURL,
+                    }}
+                />
         
     )
 }

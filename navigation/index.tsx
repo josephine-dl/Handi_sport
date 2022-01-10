@@ -46,6 +46,7 @@ import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../typ
 import LinkingConfiguration from './LinkingConfiguration';
 import Setup from '../Setup';
 
+
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
 
@@ -315,6 +316,7 @@ function HandicapScreen({navigation}){
 
   const [user, setUser]=React.useState();
 
+
   const signUp = () => {
     SignUpUser(state.mail, state.motDePasse)
       .then(data => {
@@ -332,6 +334,7 @@ function HandicapScreen({navigation}){
       .catch(error => {
         alert(error);
       })
+
   };
 
   const onAuthStateChanged = user => {
