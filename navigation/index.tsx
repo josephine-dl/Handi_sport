@@ -40,6 +40,8 @@ import PasseTempsScreen from '../screens/Salons/PasseTempsScreen';
 import ReglementScreen from '../screens/Salons/ReglementScreen';
 import BienvenueScreen from '../screens/Salons/BienvenueScreen';
 import ForumScreen from '../screens/ForumScreen';
+import ArticleScreen from '../screens/ArticleScreen';
+import AjoutCulture from '../screens/AjoutCulture';
 
 
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
@@ -98,7 +100,8 @@ function RootNavigator() {
       <Stack.Screen name="Vos Passe-temps" component={PasseTempsScreen}/>
       <Stack.Screen name="Règlement" component={ReglementScreen}/>
       <Stack.Screen name="Bienvenue" component={BienvenueScreen}/>
-
+      <Stack.Screen name="AjoutCulture" component={AjoutCulture} />
+      <Stack.Screen name="Culture" component={CultureScreen} />
 
       <Stack.Screen
         name="ChatRoom"
